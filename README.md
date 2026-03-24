@@ -10,3 +10,9 @@ Make sure to download the following libraries from the libraries side bar:
 `#include <Adafruit_TCS34725.h>`
 
 `#include <Adafruit_MotorShield.h>`
+
+Wire order for the **RGB sensor**:
+red, green, brown, black, white
+
+Wire order for the **Stepper motor**:  
+gray, green, skip, yellow, red
