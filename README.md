@@ -11,7 +11,7 @@ Make sure to download the following libraries from the libraries side bar:
 
 `#include <Adafruit_MotorShield.h>`
 
-Wire order for the **RGB sensor**:
+Wire order for the **RGB sensor**:  
 red, green, brown, black, white
 
 Wire order for the **Stepper motor**:  
