@@ -1,4 +1,4 @@
-# egg sorter project! 
+# Egg Sorter Project! 
 
 ## for Design in Engineering 1430
 
