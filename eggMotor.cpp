@@ -37,6 +37,10 @@ void setup(){
 
 char eggColor; //parameter for the motor moving function
 
+int whiteEggCount = 0;
+int coloredEggCount= 0;
+int brownEggCount = 0;
+
 void loop(){
 
 
@@ -46,8 +50,53 @@ void loop(){
   uint16_t b;
   uint16_t c;
 
-
   tcs.getRawData(&r, &g, &b, &c);
+
+
+
+  //egg checking logic--------------------------------
+  if (c < 500) { //pparently this checks if an egg is there (light level I think)
+   // Serial.println("no eggs detected");
+
+    eggColor = 'b'; 
+  } 
+  else{
+
+
+    Serial.println();
+    Serial.println(">>> NEW EGG DETECTED <<<");
+
+    printRGB(r,g,b,c);
+
+
+    if (r > 1.4 * b && g > 1.2 * b) { //check brown
+      Serial.println("Brown egg detected");
+
+      eggColor = 'B';
+      brownEggCount++;
+    }
+    else if (c > 2000 && abs(r - b) < 400) { //check white
+      Serial.println("White egg detected");
+
+      eggColor = 'W';
+      whiteEggCount++;
+    }
+    else {  //not black, not brown, not white
+      Serial.println("GETTTT OUT COLORED EGG");
+
+      eggColor = 'c'; 
+      coloredEggCount++;
+    }
+
+    moveMotors(eggColor);
+    printEggCount();
+
+  }
+
+}
+
+void printRGB(uint16_t r, uint16_t g, uint16_t b, uint16_t c){
+  
 
   Serial.print("R: "); Serial.print(r); Serial.print(" ");
   Serial.print("G: "); Serial.print(g); Serial.print(" ");
@@ -55,36 +104,17 @@ void loop(){
   Serial.print("c: "); Serial.print(c);
   Serial.println();
   delay(500);
-
-
-  //egg checking logic--------------------------------
-  if (c < 500) { //pparently this checks if an egg is there (light level I think)
-    eggColor = 'b'; 
-  } 
-  else if (r > 1.4 * b && g > 1.2 * b) { //check brown
-    eggColor = 'B';
-  }
-  else if (c > 3000 && abs(r - b) < 400) { //check white
-    eggColor = 'W';
-  }
-  else {  //not black, not brown, not white
-    eggColor = 'c'; 
-  }
-
-  if (eggColor != 'b') { //only move if egg is there
-    moveMotors(eggColor);
-  }
-       
 }
 
 //moves the motors accordingly
 void moveMotors(char eggColor){
 
 
+
+
   switch (eggColor){
 
     case 'B':
-      Serial.print("Brown egg detected");
 
 
 
@@ -99,7 +129,6 @@ void moveMotors(char eggColor){
     break;
 
     case 'W':
-      Serial.print("White egg detected");
 
 
       myMotor->step(25, FORWARD, DOUBLE);
@@ -115,12 +144,10 @@ void moveMotors(char eggColor){
     break;
 
     case 'b':
-      Serial.print("no eggs detected");
 
     break;
 
     default:
-      Serial.print("GETTTT OUT COLORED EGG");
 
 
       myMotor->step(50, FORWARD, DOUBLE);
@@ -134,6 +161,8 @@ void moveMotors(char eggColor){
 
 
   }
+
+
       
 
 
@@ -142,13 +171,45 @@ void moveMotors(char eggColor){
 //turns the servo that kicks the egg
 void kickEgg(){
 
+ // Serial.print("kick egg");
+
   servo.attach(servoPin); //only use servo when needed 
   delay(100);
-  servo.write(120);
+  servo.write(180); //the servo is not accurate but this is roughly 180 degrees UI think
   delay(500);
   servo.write(90);
   delay(100);
   servo.detach();
+
+}
+
+void printEggCount(){ 
+
+  Serial.println("---------------");
+  Serial.print("White egg count: ");
+  Serial.println(whiteEggCount);
+
+  Serial.print("Brown egg count: ");
+  Serial.println(brownEggCount);
+
+  Serial.print("Colored egg count: ");
+  Serial.println(coloredEggCount);
+  Serial.println("---------------");
+
+
+
+  if(whiteEggCount > 2){
+    Serial.println("!!omg!! White egg bin full");
+  }
+
+  if(brownEggCount > 2){
+    Serial.println("Dude... Brown egg bin full");
+  }
+
+  if(coloredEggCount > 2){
+    Serial.println("Colored egg bin full");
+  }
+
 
 }
 
